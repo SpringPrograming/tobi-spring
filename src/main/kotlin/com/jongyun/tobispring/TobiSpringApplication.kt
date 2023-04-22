@@ -1,29 +1,25 @@
 package com.jongyun.tobispring
 
-import com.jongyun.tobispring.controller.HelloController
-import com.jongyun.tobispring.service.SimpleHelloService
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory
-import org.springframework.context.support.registerBean
-import org.springframework.web.context.support.GenericWebApplicationContext
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.Configuration
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext
 import org.springframework.web.servlet.DispatcherServlet
 
+@Configuration
+@ComponentScan
+class TobiSpringApplication
+
 fun main(args: Array<String>) {
-    val applicationContext = object : GenericWebApplicationContext() {
-        override fun onRefresh() {
-            super.onRefresh()
-            val serverFactory = TomcatServletWebServerFactory(8080)
-            val webServer = serverFactory.getWebServer({ servletContext ->
-                servletContext.addServlet("dispatcherServlet", DispatcherServlet(this))
-                    .addMapping("/*")
-            })
+    val applicationContext = AnnotationConfigWebApplicationContext()
 
-            webServer.start()
-        }
-    }
-    applicationContext.registerBean<HelloController>()
-    applicationContext.registerBean<SimpleHelloService>()
+    val serverFactory = TomcatServletWebServerFactory(8080)
+    val webServer = serverFactory.getWebServer({ servletContext ->
+        servletContext.addServlet("dispatcherServlet", DispatcherServlet(applicationContext))
+            .addMapping("/*")
+    })
 
+    applicationContext.register(TobiSpringApplication::class.java)
     applicationContext.refresh()
-
-
+    webServer.start()
 }

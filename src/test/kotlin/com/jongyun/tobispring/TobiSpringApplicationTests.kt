@@ -9,5 +9,4 @@ class TobiSpringApplicationTests {
     @Test
     fun contextLoads() {
     }
-
 }
