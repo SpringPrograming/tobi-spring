@@ -1,0 +1,20 @@
+package com.jongyun.tobispring
+
+import java.net.http.HttpHeaders
+import org.junit.jupiter.api.Test
+import org.springframework.boot.test.web.client.TestRestTemplate
+
+class HelloApiTest {
+
+    @Test
+    fun helloApi() {
+        val rest = TestRestTemplate()
+        val name = "Spring"
+        val response = rest.getForEntity("http://localhost:8080/hello?name=${name}", String::class.java)
+        println(response)
+
+        check(response.body == "Hello, ${name}!")
+        check(response.statusCode.value() == 200)
+        check(response.headers.contentType.toString().startsWith("text/plain"))
+    }
+}
