@@ -1,25 +1,28 @@
 package com.jongyun.tobispring
 
+import org.springframework.boot.SpringApplication
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext
 import org.springframework.web.servlet.DispatcherServlet
 
 @Configuration
-@ComponentScan
-class TobiSpringApplication
+@ComponentScan("com.jongyun.tobispring")
+class TobiSpringApplication {
+
+    @Bean
+    fun servletWebServerFactory(): ServletWebServerFactory {
+        return TomcatServletWebServerFactory();
+    }
+
+    @Bean
+    fun dispatcherServlet(): DispatcherServlet {
+        return DispatcherServlet()
+    }
+}
 
 fun main(args: Array<String>) {
-    val applicationContext = AnnotationConfigWebApplicationContext()
-
-    val serverFactory = TomcatServletWebServerFactory(8080)
-    val webServer = serverFactory.getWebServer({ servletContext ->
-        servletContext.addServlet("dispatcherServlet", DispatcherServlet(applicationContext))
-            .addMapping("/*")
-    })
-
-    applicationContext.register(TobiSpringApplication::class.java)
-    applicationContext.refresh()
-    webServer.start()
+    SpringApplication.run(TobiSpringApplication::class.java, *args)
 }
